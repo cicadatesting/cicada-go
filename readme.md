@@ -11,7 +11,7 @@ scaling the virtual users, collecting metrics, and generating load.
 To install this module, run
 
 ```bash
-go get github.com/cicadatesting/cicada-go
+go get github.com/cicadatesting/cicada-go/cicada
 ```
 
 ## Concepts

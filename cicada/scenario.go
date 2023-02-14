@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// TODO: docs
 type ScenarioFunction = func(state *State) (interface{}, error)
 type LoadModel = func(sc ScenarioCommands, state *State) (interface{}, error)
 type UserLoop = func(uc UserCommands, state *State)
@@ -64,6 +63,7 @@ type DefaultScenarioSummary struct {
 	LastOutput interface{}
 }
 
+// Takes an output and produces a map of metrics (name:value) derived from that output
 type ResultMetricConverter = func(output interface{}) map[string]float64
 
 type NSecondsConfig struct {
@@ -72,7 +72,9 @@ type NSecondsConfig struct {
 	ResultMetricConverter ResultMetricConverter
 }
 
-// Built-in load models
+// built in load models
+
+// Runs a scenario for a set duration. Use with the WhileAlive user loop
 func NSeconds(config *NSecondsConfig) LoadModel {
 	return func(sc ScenarioCommands, state *State) (interface{}, error) {
 		resultStream := sc.GetLatestResults()
@@ -150,6 +152,7 @@ type NIterationsConfig struct {
 	ResultMetricConverter ResultMetricConverter
 }
 
+// Runs the scenario a set number of times. Use with the WhileHasWork user loop
 func NIterations(config *NIterationsConfig) LoadModel {
 	return func(sc ScenarioCommands, state *State) (interface{}, error) {
 		resultsCollected := 0
@@ -219,6 +222,9 @@ func NIterations(config *NIterationsConfig) LoadModel {
 	}
 }
 
+// Runs scenario consecutively with a single user until a successful result is collected
+//
+// Use the WhileHasWork user loop with this load model
 func RunUntilSuccess(timeout time.Duration) LoadModel {
 	return func(sc ScenarioCommands, state *State) (interface{}, error) {
 		shutdownStream := sc.ShutdownChannel()
@@ -260,6 +266,8 @@ func RunUntilSuccess(timeout time.Duration) LoadModel {
 // TODO: threshold
 
 // Built-in user loops
+
+// Run scenario function continuously until deactivated by load model
 func WhileAlive() UserLoop {
 	return func(uc UserCommands, state *State) {
 		shutdownStream := uc.ShutdownChannel()
@@ -283,6 +291,7 @@ func WhileAlive() UserLoop {
 	}
 }
 
+// Run scenario function only when directed to by load model
 func WhileHasWork() UserLoop {
 	return func(uc UserCommands, state *State) {
 		workStream := uc.GetWork()

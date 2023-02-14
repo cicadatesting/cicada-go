@@ -49,6 +49,7 @@ func NewScenarioCommands(scenario *Scenario, backend ScenarioBackend) *LocalScen
 	}
 }
 
+// Creates specified number of virtual users
 func (sc *LocalScenarioCommands) StartUsers(users int) error {
 	err := sc.backend.StartUsers(users)
 
@@ -60,6 +61,7 @@ func (sc *LocalScenarioCommands) StartUsers(users int) error {
 	return nil
 }
 
+// Stops specified number of virtual users
 func (sc *LocalScenarioCommands) StopUsers(users int) error {
 	err := sc.backend.StopUsers(users)
 
@@ -71,6 +73,7 @@ func (sc *LocalScenarioCommands) StopUsers(users int) error {
 	return nil
 }
 
+// Ensures specified number of users exist in scenario
 func (sc *LocalScenarioCommands) ScaleUsers(users int) error {
 	if users > sc.users {
 		return sc.StartUsers(users - sc.users)
@@ -79,26 +82,32 @@ func (sc *LocalScenarioCommands) ScaleUsers(users int) error {
 	}
 }
 
+// Gets number of current users in scenario
 func (sc *LocalScenarioCommands) GetNumUsers() (int, error) {
 	return sc.users, nil
 }
 
+// Returns a channel that will give results from all users in scenario as they are collected
 func (sc *LocalScenarioCommands) GetLatestResults() <-chan *PoppedUserResult {
 	return sc.backend.GetUserResults()
 }
 
+// Reports a metric value back to the running test
 func (sc *LocalScenarioCommands) AddDatastoreMetric(name string, value float64) error {
 	return sc.backend.AddMetric(name, value)
 }
 
+// Allows users to perform specified amount of iterations if using a user loop that supports work.
 func (sc *LocalScenarioCommands) AddWork(amount int) error {
 	return sc.backend.DistributeWork(amount)
 }
 
+// Sends signal to all user loops
 func (sc *LocalScenarioCommands) SendUserEvents(kind string, payload interface{}) error {
 	return sc.backend.SendUserEvents(kind, payload)
 }
 
+// Returns channel that will recieve an event if directed to shutdown by test
 func (sc *LocalScenarioCommands) ShutdownChannel() <-chan error {
 	return sc.backend.ShutdownChannel()
 }
@@ -119,10 +128,12 @@ func NewUserCommands(id string, backend UserBackend, scenario *Scenario) *LocalU
 	}
 }
 
+// Gets ID of current user
 func (uc *LocalUserCommands) GetUserID() string {
 	return uc.id
 }
 
+// Runs scenario function
 func (uc *LocalUserCommands) Run(state *State) (interface{}, error) {
 	// TODO: capture stdout
 	output, err := uc.Scenario.Fn(state)
@@ -130,10 +141,12 @@ func (uc *LocalUserCommands) Run(state *State) (interface{}, error) {
 	return output, err
 }
 
+// Returns channel that will recieve events sent by scenario to users
 func (uc *LocalUserCommands) GetEvents(kind string) <-chan *PoppedUserEvent {
 	return uc.backend.GetUserEvents(kind)
 }
 
+// Returns channel that will recieve work sent by scenario to this user
 func (uc *LocalUserCommands) GetWork() <-chan *PoppedWork {
 	poppedWork := make(chan *PoppedWork)
 	// NOTE: maybe make this class member?
@@ -152,6 +165,7 @@ func (uc *LocalUserCommands) GetWork() <-chan *PoppedWork {
 	return poppedWork
 }
 
+// Sends result of scenario function to scenario
 func (uc *LocalUserCommands) ReportResult(
 	output interface{},
 	exception error,
@@ -168,6 +182,7 @@ func (uc *LocalUserCommands) ReportResult(
 	return uc.backend.AddUserResult(&result)
 }
 
+// Returns channel that will be notified of shutdown by scenario
 func (uc *LocalUserCommands) ShutdownChannel() <-chan error {
 	return uc.backend.ShutdownChannel()
 }

@@ -402,6 +402,7 @@ func (sp *StatPrinter) AddPrinterFunction(pf *PrinterFunction) {
 	sp.printerFunctions = append(sp.printerFunctions, pf)
 }
 
+// Returns list of formatted strings for printer functions and metrics that belong to this scenario
 func (sp *StatPrinter) GetPrintouts(scenario string) []string {
 	metricNames := sp.metricAggregator.GetScenarioMetricNames()
 

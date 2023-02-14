@@ -39,6 +39,7 @@ func (e *Engine) getScenario(name string) *Scenario {
 	return scenario
 }
 
+// Adds scenario to engine
 func (e *Engine) AddScenario(scenario *Scenario) {
 	_, hasName := e.scenarios[scenario.Name]
 
@@ -49,6 +50,7 @@ func (e *Engine) AddScenario(scenario *Scenario) {
 	e.scenarios[scenario.Name] = scenario
 }
 
+// Starts test with scenarios currently in engine
 func (e *Engine) RunTest(timeout time.Duration) *RunningTest {
 	testBackend := e.backendBuilder.GetTestBackend()
 	testEventBackend := e.backendBuilder.GetTestEventBackend()
@@ -61,7 +63,7 @@ func (e *Engine) RunTest(timeout time.Duration) *RunningTest {
 	}
 
 	go func() {
-		TestRunner(timeout, scenarios, testBackend)
+		testRunner(timeout, scenarios, testBackend)
 		testBackend.Stop()
 		testEventBackend.Stop()
 	}()

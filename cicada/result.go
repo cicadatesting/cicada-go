@@ -45,6 +45,7 @@ func printScenarioResult(result *ScenarioResult) {
 	}
 }
 
+// Prints formatted test result
 func PrintResult(r *TestResult) {
 	// TODO: test result should include list of statuses in order they were collected
 	for scenario, status := range r.ScenarioStatuses {
@@ -58,6 +59,7 @@ func PrintResult(r *TestResult) {
 	}
 }
 
+// Prints formatted test result and metrics for each scenario in test
 func PrintMetricsAndResults(r *TestResult, printer MetricPrinter) {
 	for scenario, status := range r.ScenarioStatuses {
 		fmt.Printf("%s :: %s\n", scenario, status)

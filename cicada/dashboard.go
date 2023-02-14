@@ -39,6 +39,7 @@ func NewDashboard(
 	}
 }
 
+// Displays dashboard on console until test is finished
 func (d *Dashboard) Display() {
 	if err := ui.Init(); err != nil {
 		panic(err)

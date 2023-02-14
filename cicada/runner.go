@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestRunner(testTimeout time.Duration, scenarios []*Scenario, backend TestBackend) {
+func testRunner(testTimeout time.Duration, scenarios []*Scenario, backend TestBackend) {
 	startedScenarioStatuses := map[string]ScenarioStatus{}
 	state := NewState()
 	numFinishedScenarios := 0
@@ -170,7 +170,7 @@ func TestRunner(testTimeout time.Duration, scenarios []*Scenario, backend TestBa
 	)
 }
 
-func ScenarioRunner(scenario *Scenario, backend ScenarioBackend, state *State) {
+func scenarioRunner(scenario *Scenario, backend ScenarioBackend, state *State) {
 	scenarioCommands := NewScenarioCommands(scenario, backend)
 
 	start := time.Now()
@@ -188,7 +188,7 @@ func ScenarioRunner(scenario *Scenario, backend ScenarioBackend, state *State) {
 	)
 }
 
-func UserRunner(userID string, scenario *Scenario, state *State, backend UserBackend) {
+func userRunner(userID string, scenario *Scenario, state *State, backend UserBackend) {
 	userCommands := NewUserCommands(userID, backend, scenario)
 
 	scenario.UserLoop(userCommands, state)

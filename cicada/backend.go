@@ -206,7 +206,7 @@ func (b *LocalTestBackend) StartScenario(scenario *Scenario, state *State) error
 		backend := NewLocalScenarioBackend(scenario, b.eventBus, state)
 		subscriber := b.eventBus.Subscribe(fmt.Sprintf("SCENARIO_%s_RESULT", scenario.Name))
 
-		ScenarioRunner(scenario, backend, state)
+		scenarioRunner(scenario, backend, state)
 
 		select {
 		case result := <-subscriber.events:
@@ -372,7 +372,7 @@ func (b *LocalScenarioBackend) StartUsers(users int) error {
 		b.userShutdownChannels[userID] = make(chan bool)
 
 		go func(shutdownChan <-chan bool) {
-			go UserRunner(userID, b.scenario, b.state, userBackend)
+			go userRunner(userID, b.scenario, b.state, userBackend)
 			<-shutdownChan
 			userBackend.Stop()
 		}(b.userShutdownChannels[userID])

@@ -27,6 +27,9 @@ Built in load models include:
 - NIterations: Create a group of users and have them run a fixed amount of times
 - RunUntilSuccess: Create a single user and have it run sequentially until a
   successful result is collected
+- ConstantArrivalRate: Limit the number of user loops executed per second and
+  scale up or down the number of users to meet target load
+- Threshold: Increase the number of users until a load threshold is met
 
 ### Users
 
@@ -372,4 +375,57 @@ func main() {
 
     ...
 }
+```
+
+### A Constant Arrival Rate Scenario
+
+Performs 50 iterations per minute starting with 10 users and scaling up to 50
+if necessary for 10 seconds
+
+```go
+s := NewScenario(
+	"test",
+	func(state *State) (interface{}, error) {
+		...
+		return nil, nil
+	},
+	&ScenarioOptions{
+		LoadModel: ConstantArrivalRate(&ConstantArrivalRateConfig{
+			TargetRPS: 50,
+			MinUsers:  10,
+			MaxUsers:  50,
+			Duration:  time.Second * 10,
+		}),
+		UserLoop: WhileHasWork(),
+	},
+)
+```
+
+### A Threshold Scenario
+
+Increase number of users by 5 per second until the RPS goes below 5
+
+```go
+s := NewScenario(
+	"test",
+	func(state *State) (interface{}, error) {
+		...
+		return nil, nil
+	},
+	&ScenarioOptions{
+		LoadModel: Threshold(&ThresholdConfig{
+			StartingUsers: 5,
+			ScalingPeriod: time.Second,
+			ScaleOutFunction: func(currentUsers int) int {
+				return currentUsers + 5
+			},
+			ThresholdFunction: func(stats *ThresholdOutput) bool {
+				scalingPeriods++
+
+				return stats.rps < 5
+			},
+		}),
+		UserLoop: WhileAlive(),
+	},
+)
 ```

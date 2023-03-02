@@ -1,4 +1,4 @@
-module github.com/cicadatesting/cicada-go
+module github.com/cicadatesting/cicada-go v0.2.0
 
 go 1.17
 
